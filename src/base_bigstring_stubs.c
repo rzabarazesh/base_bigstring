@@ -75,6 +75,27 @@ static inline uint16_t bswap_16 (uint16_t x)
 #define Bytes_val String_val
 #endif
 
+
+#if defined(_MSC_VER) || defined(__MINGW32__) || defined(__WIN32)
+static void *memmem(const void *haystack, size_t haystack_len,
+    const void * const needle, const size_t needle_len)
+{
+    if (haystack == NULL) return NULL;
+    if (haystack_len == 0) return NULL;
+    if (needle == NULL) return NULL;
+    if (needle_len == 0) return NULL;
+
+    for (const char *h = haystack;
+            haystack_len >= needle_len;
+            ++h, --haystack_len) {
+        if (!memcmp(h, needle, needle_len)) {
+            return h;
+        }
+    }
+    return NULL;
+}
+#endif
+
 static inline char * get_bstr(value v_bstr, value v_pos)
 {
   return (char *) Caml_ba_data_val(v_bstr) + Long_val(v_pos);
